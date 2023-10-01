@@ -43,10 +43,12 @@ const App = () => {
   const submitForm = (e) => {
     e.preventDefault()
 
+    const newMovie = {title: movieTitle, minage: movieAge, time: movieTime}
 
-    console.log(movieTitle)
-    console.log(movieAge)
-    console.log(movieTime)
+    projectFirestore.collection("movies").add(newMovie)
+
+
+
   }
 
 
