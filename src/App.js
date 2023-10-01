@@ -5,34 +5,81 @@ import { useState, useEffect } from "react"
 const App = () => {
   const [data, setData] = useState([])
   const [error, setError] = useState(false)
+    // useState pro formulář
+    const [movieTitle, setMovieTitle] = useState("")
+    const [movieAge, setMovieAge] = useState(null)
+    const [movieTime, setMovieTime] = useState(null)
 
 
   useEffect( () => {
-    projectFirestore.collection("movies").get().then( (snapshot) => {
+    const unsubscribe = 
+    projectFirestore.collection("movies").onSnapshot( (snapshot) => {
 
 
       if (snapshot.empty){
         setError("Žádné filmy k vypsání")
+        setData([])
       } else {
         let result = []
         snapshot.docs.forEach( (oneMovie) => {
           result.push( {id: oneMovie.id, ...oneMovie.data()} )
         } )
         setData(result)
+        setError("")
       }
-    }).catch( (err) => {
-      setError(err.message)
-    })
+    }, err => setError(err.message) )
+ 
+    return () => unsubscribe()
+
+
   }, [])
+
 
 
   const deleteMovie = (id) => {
     projectFirestore.collection("movies").doc(id).delete()
   }
 
+  const submitForm = (e) => {
+    e.preventDefault()
+
+
+    console.log(movieTitle)
+    console.log(movieAge)
+    console.log(movieTime)
+  }
 
 
   return <div className="all-movies">
+
+<form onSubmit={submitForm}>
+      <input
+        type="text"
+        onChange={ (e) => setMovieTitle( e.target.value ) }
+        placeholder="Název filmu"
+      /><br />
+
+
+      <input
+        type="number"
+        onChange={ (e) => setMovieAge(e.target.value) }  
+        placeholder="Minimální věk"
+        min="0"
+      /><br />
+
+
+      <input
+        type="number"
+        onChange={(e) => setMovieTime(e.target.value)}
+        placeholder="Doba trvání"
+        min="0"
+      /><br />
+
+
+      <input type="submit" value="Přidat" />
+    </form>
+
+
     {error && <p>{error}</p>}
     {data.map( (oneMovie) => {
       const {id, title, minage, time} = oneMovie
