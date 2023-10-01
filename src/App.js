@@ -45,36 +45,45 @@ const App = () => {
 
     const newMovie = {title: movieTitle, minage: movieAge, time: movieTime}
 
-    projectFirestore.collection("movies").add(newMovie)
-
-
-
+    try {
+        projectFirestore.collection("movies").add(newMovie)
+        setMovieTitle("")
+        setMovieAge("")
+        setMovieTime("")
+      } catch (err) {
+        setError("Film nebyl přidán " + err.message)
+      }
   }
-
 
   return <div className="all-movies">
 
-<form onSubmit={submitForm}>
+<form onSubmit={submitForm} className="form">
       <input
         type="text"
+        className="input"
         onChange={ (e) => setMovieTitle( e.target.value ) }
         placeholder="Název filmu"
+        value={movieTitle}
       /><br />
 
 
       <input
         type="number"
+        className="input"
         onChange={ (e) => setMovieAge(e.target.value) }  
         placeholder="Minimální věk"
         min="0"
+        value={movieAge}
       /><br />
 
 
       <input
         type="number"
+        className="input"
         onChange={(e) => setMovieTime(e.target.value)}
         placeholder="Doba trvání"
         min="0"
+        value={movieTime}
       /><br />
 
 
